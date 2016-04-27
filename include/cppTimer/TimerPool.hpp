@@ -33,9 +33,9 @@ namespace cppTimer
 
     boost::shared_ptr<boost::thread> _poolMaintainerThread;
     Timers _timers;
-    boost::mutex _timersMutex;
+    mutable boost::mutex _timersMutex;
     boost::condition_variable _timersCondVar;
-    boost::chrono::time_point _currTimePoint;
+    boost::chrono::system_clock::time_point _currTimePoint;
     volatile bool _isRunning;
 
     void loopTimers();

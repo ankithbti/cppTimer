@@ -21,11 +21,13 @@
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/ptime.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/foreach.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 
 

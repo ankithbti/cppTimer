@@ -14,23 +14,26 @@
 namespace cppTimer
 {
   class TimerPool;
+  struct TimerComparator;
 
-  class CppTimer : public CppTimerI
+  class CppTimer : public CppTimerI, public boost::enable_shared_from_this<CppTimer>
   {
   public:
     typedef boost::shared_ptr<CppTimer> SharedPtr;
   private:
     CppTimerI::Task _task;
-    boost::posix_time::milliseconds _timerInterval;
-    boost::chrono::time_point _nextTriggeringPointInTime;
+    boost::chrono::milliseconds _timerInterval;
+    boost::chrono::system_clock::time_point _nextTriggeringPointInTime;
     volatile bool _live;
     TimerPool& _timerPool;
+    volatile bool _isRepeatitive;
 
-    friend TimerPool;
+    friend class TimerPool;
+    friend struct TimerComparator;
 
-    void setNextTriggerPointInTime(boost::chrono::time_point pointInTime);
+    void setNextTriggerPointInTime(boost::chrono::system_clock::time_point pointInTime);
 
-    const boost::chrono::time_point& getNextTriggerPointInTime() const
+    const boost::chrono::system_clock::time_point& getNextTriggerPointInTime() const
     {
       return _nextTriggeringPointInTime;
     }
@@ -38,16 +41,19 @@ namespace cppTimer
     void executeTask();
 
   public:
-    CppTimer(CppTimerI::Task task, long millisecs = 0, bool trigger = false );
+    CppTimer(CppTimerI::Task task);
     ~CppTimer();
 
-    virtual void setInterval(long millisecs);
-    virtual void startTimer();
+    virtual void startTimer(long millisecs, bool toRepeat = true);
     virtual void stopTimer();
 
-    virtual long getInterval() const
+    virtual const boost::chrono::milliseconds& getInterval() const
     {
       return _timerInterval;
+    }
+
+    virtual bool isRepeatitive() const {
+      return _isRepeatitive;
     }
 
   };

@@ -15,11 +15,6 @@ namespace cppTimer
     start();
   }
 
-  TimerPool::~TimerPool()
-  {
-    stop();
-  }
-
   TimerPool& TimerPool::getInstance()
   {
     static TimerPool timerPool;
@@ -90,15 +85,15 @@ namespace cppTimer
 	      }
 	  }
 
-	boost::chrono::time_point tillTime;
+	boost::chrono::system_clock::time_point tillTime;
 	if(_timers.size() > 0)
 	  {
 	    tillTime = (*(_timers.begin()))->getNextTriggerPointInTime();
 
 	  }else{
-	      tillTime = boost::chrono::milliseconds(1000);
+	      tillTime = _currTimePoint + boost::chrono::milliseconds(1000);
 	  }
-	_timersCondVar.wait(lock, tillTime);
+	_timersCondVar.wait_until(lock, tillTime);
       }
   }
 

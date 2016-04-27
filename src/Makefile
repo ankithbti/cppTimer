@@ -11,8 +11,8 @@ CXX=/usr/bin/g++
 CXXFLAGS=-g -O2 -std=c++0x -Wall $(INCS)
 
 SRCS = \
-	\
-	\
+	CppTimer.cpp \
+	TimerPool.cpp \
 
 MAIN_SRC = Main.cpp
 
@@ -26,6 +26,7 @@ LIBS = \
         -L$(BOOST_BASE)/lib -lboost_thread \
         -L$(BOOST_BASE)/lib -lboost_system \
         -L$(BOOST_BASE)/lib -lboost_iostreams \
+        -L$(BOOST_BASE)/lib -lboost_chrono \
 		-lpthread
 
 all: $(BINARY)

@@ -19,14 +19,10 @@ namespace cppTimer
     typedef boost::shared_ptr<CppTimerI> SharedPtr;
     typedef boost::function<void()> Task;
 
-//    CppTimerI(boost::function<void()>, long millisecs = 0, bool trigger = false );
-//    ~CppTimerI();
 
-
-    virtual void setInterval(long millisecs) = 0;
-    virtual void startTimer() = 0;
+    virtual void startTimer(long millisecs, bool toRepeat = true) = 0;
     virtual void stopTimer() = 0;
-    virtual long getInterval() const = 0;
+    virtual const boost::chrono::milliseconds& getInterval() const = 0;
 
     virtual ~CppTimerI(){
 
