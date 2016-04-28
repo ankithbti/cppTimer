@@ -7,8 +7,11 @@ make all - To build binary [ make sure you have bin folder created ]
 make createlib - To build so library [ make sure you have lib folder created ]
 
 ## To Run
-as binary - ./bin/appCppTimer
+<p>
+As binary - ./bin/appCppTimer
+<br>
 as lib - ./lib/libCppTimer.so
+</p>
 
 ## To Do
 * To fix the bug in TimerPool loopTimers related to sleep
