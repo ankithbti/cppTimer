@@ -10,9 +10,13 @@
 
 #include <cppTimer/CommonHeaders.hpp>
 #include <cppTimer/CppTimer.hpp>
+#include <cppTimer/TimerTaskConsumer.hpp>
 
 namespace cppTimer
 {
+  // TODO - May be in future we can take this from some config file in TimePool
+  const int NO_OF_TASK_CONSUMER_THREADS = 1;
+
   struct TimerComparator
   {
     bool operator()(CppTimer::SharedPtr timer1, CppTimer::SharedPtr timer2)
@@ -20,7 +24,7 @@ namespace cppTimer
       return timer1->getNextTriggerPointInTime() < timer2->getNextTriggerPointInTime();
     }
   };
-  class TimerPool : boost::noncopyable
+  class TimerPool : private boost::noncopyable
   {
 
   public:
@@ -37,6 +41,7 @@ namespace cppTimer
     boost::condition_variable _timersCondVar;
     boost::chrono::system_clock::time_point _currTimePoint;
     volatile bool _isRunning;
+    TimerTaskConsumer::SharedPtr _taskConsumer;
 
     void loopTimers();
 
@@ -50,6 +55,7 @@ namespace cppTimer
 
     void registerTimer(CppTimer::SharedPtr timer);
     void unregisterTimer(CppTimer::SharedPtr timer);
+
 
     bool isRunning() const
     {

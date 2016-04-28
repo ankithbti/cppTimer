@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <queue>
 #include <iostream>
 
 #include <boost/shared_ptr.hpp>

@@ -16,7 +16,6 @@ namespace cppTimer
 	  _live(false),
 	  _timerPool(TimerPool::getInstance())
   {
-
   }
 
   CppTimer::~CppTimer()

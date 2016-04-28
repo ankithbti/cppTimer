@@ -12,7 +12,7 @@
 
 namespace cppTimer
 {
-  class CppTimerI : boost::noncopyable
+  class CppTimerI : private boost::noncopyable
   {
 
   public:

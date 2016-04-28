@@ -3,14 +3,21 @@
 
 struct TaskStruct{
   int _i;
+  boost::posix_time::ptime _prev;
   TaskStruct(int i) : _i(i){
 
   }
 
   void myTask()
   {
-    boost::posix_time::ptime now ( boost::posix_time::second_clock::local_time());
-    std::cout << now << " ::  My Task - " << _i << std::endl;
+    if(_prev.is_not_a_date_time()){
+	_prev = boost::posix_time::microsec_clock::local_time();
+    }else{
+	boost::posix_time::time_duration gap = boost::posix_time::microsec_clock::local_time() - _prev;
+	std::cout << gap.total_milliseconds() ;
+	_prev = boost::posix_time::microsec_clock::local_time();
+    }
+    std::cout << " ::  My Task - " << _i << std::endl;
   }
 };
 
@@ -18,7 +25,7 @@ int main()
 {
   std::cout << " Hello Timer" << std::endl;
 
-  int timercount = 2;
+  int timercount = 10;
   std::vector<cppTimer::CppTimerI::SharedPtr> timers;
   std::vector<TaskStruct> taskStructs;
 
@@ -28,23 +35,20 @@ int main()
       taskStructs.push_back(ts);
     }
 
-  //  for( int i = 0; i < timercount; i++ )
-  //    {
-  //      cppTimer::CppTimerI::SharedPtr timer(new cppTimer::CppTimer(boost::bind(&TaskStruct::myTask, &taskStructs.at(i))));
-  //
-  //      timer->startTimer(5000);
-  //      timers.push_back(timer);
-  //    }
+  // Creating timers - multiple
+  for( int i = 0; i < timercount; i++ )
+    {
+      cppTimer::CppTimerI::SharedPtr timer(new cppTimer::CppTimer(boost::bind(&TaskStruct::myTask, &taskStructs.at(i))));
+      if((i%2) == 0){
+	  // Even will only fire 1 time
+	  timer->startTimer(2000, false);
+      }else{
+	  // Odd will fire in repeat fashion
+	  timer->startTimer(2000);
+      }
+      timers.push_back(timer);
+    }
 
-  cppTimer::CppTimerI::SharedPtr timer(new cppTimer::CppTimer(boost::bind(&TaskStruct::myTask, &taskStructs.at(0))));
-  timer->startTimer(5000);
-  timers.push_back(timer);
-
-  sleep(1);
-
-  cppTimer::CppTimerI::SharedPtr timer1(new cppTimer::CppTimer(boost::bind(&TaskStruct::myTask, &taskStructs.at(1))));
-    timer1->startTimer(2000);
-    timers.push_back(timer1);
 
   boost::this_thread::sleep(boost::posix_time::milliseconds(20000));
   for( int i = 0; i < timercount; i++ )
@@ -57,15 +61,6 @@ int main()
 
   boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
   std::cout << " Exiting." << std::endl;
-  //  {
-  //    cppTimer::CppTimerI::SharedPtr timer(new cppTimer::CppTimer(boost::bind(&myTask)));
-  //    timer->startTimer(1000);
-  //
-  //
-  //    boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
-  //    timer->stopTimer();
-  //    boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
-  //  }
 
   return 0;
 }

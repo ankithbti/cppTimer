@@ -19,7 +19,4 @@ Use lib - ./lib/libCppTimer.so
 </p>
 
 ## To Do
-* To fix the bug in TimerPool loopTimers related to sleep
-* To use Q+consumer concept rather than using the separate thread for each task execution
 * To use c++11 variadic template for callback function [ task ]
-* To use toRepeat flag in TimerPool

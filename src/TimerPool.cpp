@@ -28,6 +28,7 @@ namespace cppTimer
       {
 	_isRunning = true;
 	_poolMaintainerThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&TimerPool::loopTimers, this)));
+	_taskConsumer = TimerTaskConsumer::SharedPtr(new TimerTaskConsumer(NO_OF_TASK_CONSUMER_THREADS));
       }
   }
 
@@ -40,6 +41,8 @@ namespace cppTimer
 	_timersCondVar.notify_one();
       }
     _poolMaintainerThread->join();
+    _poolMaintainerThread.reset();
+    _taskConsumer.reset();
   }
 
   void TimerPool::registerTimer(CppTimer::SharedPtr timer)
@@ -70,19 +73,25 @@ namespace cppTimer
     while(_isRunning)
       {
 	boost::unique_lock<boost::mutex> lock(_timersMutex);
+
 	_currTimePoint = boost::chrono::system_clock::now();
 
-	for(TimersConstIt it = _timers.begin() ; it != _timers.end() ; ++it)
+	if(_timers.size() > 0 && ((*_timers.begin())->getNextTriggerPointInTime() <= _currTimePoint))
 	  {
-	    if((*it)->getNextTriggerPointInTime() <= _currTimePoint)
-	      {
-		(*it)->setNextTriggerPointInTime(_currTimePoint + (*it)->getInterval());
-		boost::thread taskThread(boost::bind(&TimerPool::executeTask, this, (*it)));
-		taskThread.detach();
-	      }else{
-		  // as our list is already sorted based upon nextTriggerPointInTime
-		  break;
-	      }
+	    CppTimer::SharedPtr oldTimer(*_timers.begin());
+	    oldTimer->setNextTriggerPointInTime(_currTimePoint + oldTimer->getInterval());
+
+	    // Send this task to TimerTaskConsumer for further processing
+	    _taskConsumer->addTask(boost::bind(&TimerPool::executeTask, this, oldTimer));
+
+	    // Delete the old entry and again add the entry again, so that our entries
+	    // in set should be sorted on basis of nextTriggerPoint
+	    _timers.erase(_timers.begin());
+	    _timers.insert(oldTimer);
+	    if(!oldTimer->isRepeatitive()){
+		_timers.erase(_timers.find(oldTimer));
+	    }
+
 	  }
 
 	boost::chrono::system_clock::time_point tillTime;
@@ -91,7 +100,7 @@ namespace cppTimer
 	    tillTime = (*(_timers.begin()))->getNextTriggerPointInTime();
 
 	  }else{
-	      tillTime = _currTimePoint + boost::chrono::milliseconds(1000);
+	      tillTime = _currTimePoint + boost::chrono::milliseconds(10);
 	  }
 	_timersCondVar.wait_until(lock, tillTime);
       }

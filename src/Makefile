@@ -13,6 +13,7 @@ CXXFLAGS=-g -O2 -std=c++0x -Wall $(INCS)
 SRCS = \
 	CppTimer.cpp \
 	TimerPool.cpp \
+	TimerTaskConsumer.cpp \
 
 MAIN_SRC = Main.cpp
 
