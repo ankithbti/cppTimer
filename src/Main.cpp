@@ -10,11 +10,12 @@ struct TaskStruct{
 
   void myTask()
   {
+    std::cout << boost::posix_time::microsec_clock::local_time();
     if(_prev.is_not_a_date_time()){
 	_prev = boost::posix_time::microsec_clock::local_time();
     }else{
 	boost::posix_time::time_duration gap = boost::posix_time::microsec_clock::local_time() - _prev;
-	std::cout << gap.total_milliseconds() ;
+	 std::cout << " | " << gap.total_milliseconds() ;
 	_prev = boost::posix_time::microsec_clock::local_time();
     }
     std::cout << " ::  My Task - " << _i << std::endl;
@@ -41,10 +42,16 @@ int main()
       cppTimer::CppTimerI::SharedPtr timer(new cppTimer::CppTimer(boost::bind(&TaskStruct::myTask, &taskStructs.at(i))));
       if((i%2) == 0){
 	  // Even will only fire 1 time
-	  timer->startTimer(2000, false);
+	  timer->startTimer(3000, false);
       }else{
 	  // Odd will fire in repeat fashion
-	  timer->startTimer(2000);
+	  if( i > 5 ){
+	      timer->startTimer(1000);
+	  }else{
+	      timer->startTimer(2000);
+	  }
+
+
       }
       timers.push_back(timer);
     }
