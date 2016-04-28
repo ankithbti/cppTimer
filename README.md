@@ -1,7 +1,7 @@
 # cppTimer
 
 ## Build
-> Prerequisite - correct boost install base path set in env variable BOOST_INSTALL_ROOT [ check src/makefile ]
+> Prerequisite - Make sure you have correct boost base path set in env variable BOOST_INSTALL_ROOT [ check src/makefile ]
 
 <p>
 make clean - To clean
