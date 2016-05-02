@@ -12,23 +12,27 @@
 
 namespace cppTimer
 {
-  class CppTimerI : private boost::noncopyable
-  {
+class CppTimerI : private boost::noncopyable
+{
 
-  public:
-    typedef boost::shared_ptr<CppTimerI> SharedPtr;
-    typedef boost::function<void()> Task;
+public:
+	typedef boost::shared_ptr<CppTimerI> SharedPtr;
+	//std::function< typename std::result_of<callable(arguments...)>::type()> task(std::bind(std::forward<callable>(f), std::forward<arguments>(args)...));
+	//typedef boost::function<typename std::result_of<Callable(VarArgs...)>::type(VarArgs...)> Task;
+	//typedef typename std::function<typename std::result_of<Callable(VarArgs...)>::type(VarArgs...)> Task;
+	typedef std::function<void()> Task;
 
+	virtual void stopTimer() = 0;
+	virtual const boost::chrono::milliseconds& getInterval() const = 0;
+	virtual const boost::chrono::milliseconds& getStartDelay() const = 0;
+	virtual bool getStatus() const = 0;
+	virtual bool isRepeatitive() const = 0;
 
-    virtual void startTimer(long millisecs, bool toRepeat = true) = 0;
-    virtual void stopTimer() = 0;
-    virtual const boost::chrono::milliseconds& getInterval() const = 0;
+	virtual ~CppTimerI(){
 
-    virtual ~CppTimerI(){
+	}
 
-    }
-
-  };
+};
 }
 
 

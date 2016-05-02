@@ -14,60 +14,50 @@
 
 namespace cppTimer
 {
-  // TODO - May be in future we can take this from some config file in TimePool
-  const int NO_OF_TASK_CONSUMER_THREADS = 1;
+// TODO - May be in future we can take this from some config file in TimePool
+const int NO_OF_TASK_CONSUMER_THREADS = 1;
 
-  struct TimerComparator
-  {
-    bool operator()(CppTimer::SharedPtr timer1, CppTimer::SharedPtr timer2)
-    {
-      return timer1->getNextTriggerPointInTime() < timer2->getNextTriggerPointInTime();
-    }
-  };
-  class TimerPool : private boost::noncopyable
-  {
+struct TimerComparator
+{
+	bool operator()(CppTimer::SharedPtr timer1, CppTimer::SharedPtr timer2)
+	{
+		return timer1->getNextTriggerPointInTime() < timer2->getNextTriggerPointInTime();
+	}
+};
 
-  public:
-    typedef boost::shared_ptr<TimerPool> SharedPtr;
-    typedef std::set<CppTimer::SharedPtr, TimerComparator> Timers;
-    typedef Timers::iterator TimersIt;
-    typedef Timers::const_iterator TimersConstIt;
+class TimerPool : private boost::noncopyable
+{
 
-  private:
+public:
+	typedef boost::shared_ptr<TimerPool> SharedPtr;
+	typedef std::set<CppTimer::SharedPtr, TimerComparator> Timers;
+	typedef Timers::iterator TimersIt;
+	typedef Timers::const_iterator TimersConstIt;
 
-    boost::shared_ptr<boost::thread> _poolMaintainerThread;
-    Timers _timers;
-    mutable boost::mutex _timersMutex;
-    boost::condition_variable _timersCondVar;
-    boost::chrono::system_clock::time_point _currTimePoint;
-    volatile bool _isRunning;
-    TimerTaskConsumer::SharedPtr _taskConsumer;
+private:
 
-    void loopTimers();
+	boost::shared_ptr<boost::thread> _poolMaintainerThread;
+	Timers _timers;
+	mutable boost::mutex _timersMutex;
+	boost::condition_variable _timersCondVar;
+	boost::chrono::system_clock::time_point _currTimePoint;
+	volatile bool _isRunning;
+	TimerTaskConsumer::SharedPtr _taskConsumer;
 
+	void start();
+	void stop();
+	void loopTimers();
+	void executeTask(CppTimer::SharedPtr timer);
 
+public:
+	static TimerPool& getInstance();
+	void registerTimer(CppTimer::SharedPtr timer);
+	void unregisterTimer(CppTimer::SharedPtr timer);
+	bool isRunning() const;
 
-  public:
-    static TimerPool& getInstance();
-
-    void start();
-    void stop();
-
-    void registerTimer(CppTimer::SharedPtr timer);
-    void unregisterTimer(CppTimer::SharedPtr timer);
-
-
-    bool isRunning() const
-    {
-      boost::unique_lock<boost::mutex> lock(_timersMutex);
-      return _isRunning;
-    }
-
-    void executeTask(CppTimer::SharedPtr timer);
-
-  private:
-    TimerPool();
-  };
+private:
+	TimerPool();
+};
 }
 
 

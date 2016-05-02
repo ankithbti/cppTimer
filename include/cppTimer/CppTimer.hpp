@@ -13,50 +13,79 @@
 
 namespace cppTimer
 {
-  class TimerPool;
-  struct TimerComparator;
 
-  class CppTimer : public CppTimerI, public boost::enable_shared_from_this<CppTimer>
-  {
-  public:
-    typedef boost::shared_ptr<CppTimer> SharedPtr;
-  private:
-    CppTimerI::Task _task;
-    boost::chrono::milliseconds _timerInterval;
-    boost::chrono::system_clock::time_point _nextTriggeringPointInTime;
-    volatile bool _live;
-    TimerPool& _timerPool;
-    volatile bool _isRepeatitive;
+template <typename R, typename... T>
+class Callback
+{
+public:
+	Callback(R (*f)(T...)) { _f = f; }
+	R operator()(T... args) {return _f(args...);}
 
-    friend class TimerPool;
-    friend struct TimerComparator;
+private:
+	R (*_f)(T...);
 
-    void setNextTriggerPointInTime(boost::chrono::system_clock::time_point pointInTime);
+};
 
-    const boost::chrono::system_clock::time_point& getNextTriggerPointInTime() const
-    {
-      return _nextTriggeringPointInTime;
-    }
 
-    void executeTask();
 
-  public:
-    CppTimer(CppTimerI::Task task);
-    ~CppTimer();
+class TimerPool;
+struct TimerComparator;
 
-    virtual void startTimer(long millisecs, bool toRepeat = true);
-    virtual void stopTimer();
+class CppTimer : public CppTimerI , public boost::enable_shared_from_this<CppTimer>
+{
+public:
+	typedef boost::shared_ptr<CppTimer> SharedPtr;
+private:
+	CppTimerI::Task _task;
+	boost::chrono::milliseconds _timerInterval;
+	boost::chrono::milliseconds _startDelay;
+	boost::chrono::system_clock::time_point _nextTriggeringPointInTime;
+	volatile bool _isRepeatitive;
+	volatile bool _live;
+	TimerPool& _timerPool;
 
-    virtual const boost::chrono::milliseconds& getInterval() const
-    {
-      return _timerInterval;
-    }
+	friend class TimerPool;
+	friend struct TimerComparator;
 
-    virtual bool isRepeatitive() const {
-      return _isRepeatitive;
-    }
+	void setNextTriggerPointInTime(boost::chrono::system_clock::time_point pointInTime);
 
-  };
+	const boost::chrono::system_clock::time_point& getNextTriggerPointInTime() const
+	{
+		return _nextTriggeringPointInTime;
+	}
+
+	void setStatus(bool status)
+	{
+		_live = status;
+	}
+
+	void executeTask();
+
+public:
+	CppTimer(typename CppTimerI::Task task, long timerIntervalInMillisecs, bool toRepeat = false, long startTimerDelayInMillisecs = 0);
+
+	virtual void stopTimer();
+
+	virtual const boost::chrono::milliseconds& getInterval() const
+	{
+		return _timerInterval;
+	}
+
+	virtual const boost::chrono::milliseconds& getStartDelay() const
+	{
+		return _startDelay;
+	}
+
+	virtual bool getStatus() const
+	{
+		return _live;
+	}
+
+	virtual bool isRepeatitive() const {
+		return _isRepeatitive;
+	}
+
+};
 }
 
 

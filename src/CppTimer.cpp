@@ -11,39 +11,35 @@
 namespace cppTimer
 {
 
-  CppTimer::CppTimer(CppTimerI::Task task) :
-	  _task(task),
-	  _live(false),
-	  _timerPool(TimerPool::getInstance())
-  {
-  }
+CppTimer::CppTimer(CppTimerI::Task task, long timerIntervalInMillisecs, bool toRepeat, long startTimerDelayInMillisecs) :
+			  _task(task),
+			  _timerInterval(timerIntervalInMillisecs),
+			  _startDelay(startTimerDelayInMillisecs),
+			  _isRepeatitive(toRepeat),
+			  _live(false),
+			  _timerPool(TimerPool::getInstance())
+{
+	// A safe Hack to make shared_from_this work when we have no actual shared object for CppTimer
+	auto wp = CppTimer::SharedPtr(this, [](CppTimer*){});
+	_timerPool.registerTimer(shared_from_this());
+}
 
-  CppTimer::~CppTimer()
-  {
+void CppTimer::stopTimer()
+{
+	// A safe Hack to make shared_from_this work when we have no actual shared object for CppTimer
+	auto wp = CppTimer::SharedPtr(this, [](CppTimer*){});
+	_timerPool.unregisterTimer(shared_from_this());
+}
 
-  }
+void CppTimer::setNextTriggerPointInTime(boost::chrono::system_clock::time_point pointInTime)
+{
+	_nextTriggeringPointInTime = pointInTime;
+}
 
-  void CppTimer::startTimer(long millisecs, bool toRepeat)
-  {
-    _timerInterval = boost::chrono::duration_cast<boost::chrono::milliseconds>(boost::chrono::milliseconds(millisecs));
-    _isRepeatitive = toRepeat;
-    _timerPool.registerTimer(shared_from_this());
-  }
-
-  void CppTimer::stopTimer()
-  {
-    _timerPool.unregisterTimer(shared_from_this());
-  }
-
-  void CppTimer::setNextTriggerPointInTime(boost::chrono::system_clock::time_point pointInTime)
-  {
-    _nextTriggeringPointInTime = pointInTime;
-  }
-
-  void CppTimer::executeTask()
-  {
-    _task();
-  }
+void CppTimer::executeTask()
+{
+	_task();
+}
 
 }
 

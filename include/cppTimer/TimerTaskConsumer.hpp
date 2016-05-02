@@ -14,26 +14,26 @@
 
 namespace cppTimer
 {
-  class TimerTaskConsumer : private boost::noncopyable
-  {
-  public:
-    typedef boost::shared_ptr<TimerTaskConsumer> SharedPtr;
-    typedef std::queue<CppTimer::Task> TaskQ;
+class TimerTaskConsumer : private boost::noncopyable
+{
+public:
+	typedef boost::shared_ptr<TimerTaskConsumer> SharedPtr;
+	typedef std::queue<CppTimerI::Task> TaskQ;
 
-    void executeTask();
+	void executeTask();
 
-  private:
-    TaskQ _taskQ;
-    boost::thread_group _consumerThreadGroup;
-    boost::mutex _qMutex;
-    boost::condition_variable _qCondVar;
+private:
+	TaskQ _taskQ;
+	boost::thread_group _consumerThreadGroup;
+	boost::mutex _qMutex;
+	boost::condition_variable _qCondVar;
 
-  public:
-    TimerTaskConsumer(int noOfConsumers = 1);
+public:
+	TimerTaskConsumer(int noOfConsumers = 1);
 
-    void addTask(CppTimer::Task task);
+	void addTask(typename CppTimerI::Task task);
 
-  };
+};
 }
 
 
