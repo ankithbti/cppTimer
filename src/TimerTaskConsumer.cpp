@@ -9,6 +9,7 @@
 
 namespace cppTimer
 {
+/*
 TimerTaskConsumer::TimerTaskConsumer(int noOfConsumers)
 {
 	std::cout << " No of Consumer Threads: " << noOfConsumers << std::endl;
@@ -44,5 +45,6 @@ void TimerTaskConsumer::executeTask()
 		task();
 	}
 }
+*/
 }
 

@@ -11,6 +11,7 @@
 namespace cppTimer
 {
 
+/*
 CppTimer::CppTimer(CppTimerI::Task task, long timerIntervalInMillisecs, bool toRepeat, long startTimerDelayInMillisecs) :
 			  _task(task),
 			  _timerInterval(timerIntervalInMillisecs),
@@ -40,6 +41,7 @@ void CppTimer::executeTask()
 {
 	_task();
 }
+*/
 
 }
 

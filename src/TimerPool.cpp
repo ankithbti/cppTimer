@@ -10,6 +10,7 @@
 namespace cppTimer
 {
 
+/*
 TimerPool::TimerPool () :
 						  _isRunning (false)
 {
@@ -129,5 +130,7 @@ TimerPool::executeTask (CppTimer::SharedPtr timer)
 {
 	timer->executeTask ();
 }
+
+*/
 }
 

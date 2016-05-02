@@ -13,6 +13,7 @@
 #include <vector>
 #include <set>
 #include <queue>
+#include <memory>
 #include <iostream>
 
 #include <boost/shared_ptr.hpp>

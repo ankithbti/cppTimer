@@ -12,15 +12,16 @@
 
 namespace cppTimer
 {
+template<typename... Args>
 class CppTimerI : private boost::noncopyable
 {
 
 public:
-	typedef boost::shared_ptr<CppTimerI> SharedPtr;
+	typedef boost::shared_ptr<CppTimerI<Args...> > SharedPtr;
 	//std::function< typename std::result_of<callable(arguments...)>::type()> task(std::bind(std::forward<callable>(f), std::forward<arguments>(args)...));
 	//typedef boost::function<typename std::result_of<Callable(VarArgs...)>::type(VarArgs...)> Task;
 	//typedef typename std::function<typename std::result_of<Callable(VarArgs...)>::type(VarArgs...)> Task;
-	typedef std::function<void()> Task;
+	typedef std::function<void(Args...)> Task;
 
 	virtual void stopTimer() = 0;
 	virtual const boost::chrono::milliseconds& getInterval() const = 0;
